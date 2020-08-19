@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: io.colocate
+testFramework: spock
+sourceLanguage: groovy
+buildTool: gradle
+features: [annotation-api, app-name, cache-hazelcast, config-consul, config-kubernetes, data, data-jpa, discovery-consul, docker, elasticsearch, file-watch, flyway, gradle, graphql, groovy, groovy-application, h2, hibernate-gorm, hibernate-validator, http-client, jackson-xml, jax-rs, jdbc-hikari, jetty-server, jib, kafka, kubernetes, log4j2, management, micrometer, micrometer-prometheus, openapi, readme, security, security-annotations, security-jwt, spock, views-thymeleaf, yaml]

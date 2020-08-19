@@ -43,20 +43,26 @@ services:
         hard: -1
     ports:
       - 9200:9200
-  colocate-pipe:
-    build: ./pipe
-    image: colocate-pipe
-    container_name: colocate-pipe
+
+  service-compute:
+    build: ./service-compute
+    image: service-compute
+    container_name: service-compute
     network_mode: host
-  colocate-compute:
-    build: ./compute
-    image: colocate-compute
-    container_name: colocate-compute
+  service-gateway:
+    build: ./service-gateway
+    image: service-gateway
+    container_name: service-gateway
     network_mode: host
-  colocate-summary:
-    build: ./summary
-    image: colocate-summary
-    container_name: colocate-summary
+  service-pipeline:
+    build: ./service-pipeline
+    image: service-pipeline
+    container_name: service-pipeline
+    network_mode: host
+  service-summary:
+    build: ./service-summary
+    image: service-summary
+    container_name: service-summary
     network_mode: host
   frontend:
     build: ./frontend
