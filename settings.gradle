@@ -1,3 +1,4 @@
-include 'pipe'
-include 'compute'
-include 'summary'
+include 'service-compute'
+include 'service-gateway'
+include 'service-pipeline'
+include 'service-summary'
