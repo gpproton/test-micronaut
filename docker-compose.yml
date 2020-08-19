@@ -1,4 +1,4 @@
-version: '2'
+version: '2.1'
 
 services:
   jsreport:
@@ -11,6 +11,11 @@ services:
     image: consul
     container_name: consul
     network_mode: host
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8500"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
   kafkaserver:
     image: "spotify/kafka:latest"
     container_name: kafka
@@ -22,14 +27,14 @@ services:
     environment:
       ADVERTISED_HOST: localhost
       ADVERTISED_PORT: 9092
-  kafka_manager:
-    image: "mzagar/kafka-manager-docker:1.3.3.4"
-    container_name: kafkamanager
-    network_mode: host
-    ports:
-      - 9000:9000
-    environment:
-      ZK_HOSTS: "localhost:2181"
+#  kafka_manager:
+#    image: "mzagar/kafka-manager-docker:1.3.3.4"
+#    container_name: kafkamanager
+#    network_mode: host
+#    ports:
+#      - 9000:9000
+#    environment:
+#      ZK_HOSTS: "localhost:2181"
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.4.2
     container_name: elasticsearch
@@ -48,24 +53,60 @@ services:
     build: ./service-compute
     image: service-compute
     container_name: service-compute
-    network_mode: host
+    #network_mode: host
+    ports:
+      - 8881:8080
+    depends_on:
+      consul:
+        condition: service_healthy
   service-gateway:
     build: ./service-gateway
     image: service-gateway
     container_name: service-gateway
     network_mode: host
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 30s
+      timeout: 20s
+      retries: 5
+    depends_on:
+      consul:
+        condition: service_healthy
+  service-identity:
+    build: ./service-identity
+    image: service-identity
+    container_name: service-identity
+    #network_mode: host
+    ports:
+      - 8882:8080
+    depends_on:
+      consul:
+        condition: service_healthy
   service-pipeline:
     build: ./service-pipeline
     image: service-pipeline
     container_name: service-pipeline
-    network_mode: host
+    #network_mode: host
+    ports:
+      - 8883:8080
+    depends_on:
+      consul:
+        condition: service_healthy
   service-summary:
     build: ./service-summary
     image: service-summary
     container_name: service-summary
-    network_mode: host
+    #network_mode: host
+    ports:
+      - 8884:8080
+    depends_on:
+      consul:
+        condition: service_healthy
   frontend:
     build: ./frontend
     image: frontend
     container_name: frontend
     network_mode: host
+    depends_on:
+      service-gateway:
+        condition: service_healthy

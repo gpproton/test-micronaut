@@ -6,31 +6,11 @@ datasources:
     password: ''
     schema-generate: CREATE_DROP
     dialect: H2
-kafka.bootstrap.servers: localhost:9092
-elasticsearch.httpHosts: '"http://localhost:9200,http://127.0.0.2:9200"'
-micronaut:
-  metrics:
-    enabled: true
-    export:
-      prometheus:
-        enabled: true
-        descriptions: true
-        step: PT1M
-  security:
-    authentication: bearer
-    token:
-      jwt:
-        signatures:
-          secret:
-            generator:
-              secret: '"${JWT_GENERATOR_SIGNATURE_SECRET:pleaseChangeThisSecretForANewOne}"'
 consul:
   client:
     registration:
       enabled: true
     defaultZone: ${CONSUL_HOST:localhost}:${CONSUL_PORT:8500}
-jpa.default.properties.hibernate.hbm2ddl.auto: update
-hazelcast.network.addresses: '[''121.0.0.1:5701'']'
 dataSource:
   url: jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
   driverClassName: org.h2.Driver
@@ -45,3 +25,7 @@ hibernate:
     queries: false
     use_second_level_cache: false
     use_query_cache: false
+jpa.default.properties.hibernate.hbm2ddl.auto: update
+kafka.bootstrap.servers: localhost:9092
+elasticsearch.httpHosts: '"http://localhost:9200,http://127.0.0.2:9200"'
+hazelcast.network.addresses: '[''121.0.0.1:5701'']'
