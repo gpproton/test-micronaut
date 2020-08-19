@@ -1,11 +1,11 @@
 plugins {
     id "groovy"
+    id "com.github.johnrengelman.shadow" version "6.0.0"
     id "application"
-    id "com.google.cloud.tools.jib" version "2.1.0"
 }
 
 version "0.1"
-group "io.colocate"
+group "colocate.io"
 
 repositories {
     mavenCentral()
@@ -22,38 +22,26 @@ dependencies {
     compileOnly("io.micronaut:micronaut-inject-groovy")
     compileOnly("io.micronaut.data:micronaut-data-processor")
     compileOnly("io.micronaut.configuration:micronaut-openapi")
-    compileOnly("io.micronaut.jaxrs:micronaut-jaxrs-processor")
-    compileOnly("io.micronaut.security:micronaut-security-annotations")
     implementation(platform("io.micronaut:micronaut-bom:$micronautVersion"))
     implementation("io.micronaut:micronaut-inject")
     implementation("io.micronaut:micronaut-validation")
     implementation("io.micronaut.groovy:micronaut-runtime-groovy")
     implementation("javax.annotation:javax.annotation-api")
-    implementation("io.micronaut.servlet:micronaut-http-server-jetty")
+    implementation("io.micronaut:micronaut-http-server-netty")
     implementation("io.micronaut:micronaut-http-client")
     implementation("io.swagger.core.v3:swagger-annotations")
-    implementation("io.micronaut:micronaut-management")
     implementation("io.micronaut:micronaut-discovery-client")
-    implementation("io.micronaut.kubernetes:micronaut-kubernetes-discovery-client")
-    implementation("io.micronaut.micrometer:micronaut-micrometer-core")
-    implementation("io.micronaut.micrometer:micronaut-micrometer-registry-prometheus")
-    implementation("io.micronaut.flyway:micronaut-flyway")
+    implementation("io.micronaut.liquibase:micronaut-liquibase")
     implementation("io.micronaut.sql:micronaut-jdbc-hikari")
     implementation("io.micronaut.data:micronaut-data-hibernate-jpa")
     implementation("io.micronaut.beanvalidation:micronaut-hibernate-validator")
     implementation("io.micronaut.groovy:micronaut-hibernate-gorm")
-    implementation("io.micronaut.security:micronaut-security")
-    implementation("io.micronaut.security:micronaut-security-jwt")
     implementation("io.micronaut.elasticsearch:micronaut-elasticsearch")
     implementation("io.micronaut.graphql:micronaut-graphql")
     implementation("io.micronaut.cache:micronaut-cache-hazelcast")
     implementation("io.micronaut.kafka:micronaut-kafka")
     implementation("io.micronaut.views:micronaut-views-thymeleaf")
-    implementation("io.micronaut.xml:micronaut-jackson-xml")
-    implementation("io.micronaut.jaxrs:micronaut-jaxrs-server")
-    implementation("org.apache.logging.log4j:log4j-core:2.12.1")
-    runtimeOnly("org.apache.logging.log4j:log4j-api:2.12.1")
-    runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.12.1")
+    runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("com.h2database:h2")
     runtimeOnly("org.apache.tomcat:tomcat-jdbc")
     testImplementation(enforcedPlatform("io.micronaut:micronaut-bom:$micronautVersion"))
@@ -66,7 +54,7 @@ dependencies {
 
 test.classpath += configurations.developmentOnly
 
-mainClassName = "io.colocate.Application"
+mainClassName = "colocate.io.Application"
 
 // use JUnit 5 platform
 test {
@@ -82,6 +70,9 @@ tasks.withType(GroovyCompile) {
     groovyOptions.forkOptions.jvmArgs.add('-Dgroovy.parameters=true')
 }
 
+shadowJar {
+    mergeServiceFiles()
+}
 
 tasks.withType(JavaExec) {
     classpath += configurations.developmentOnly
@@ -96,5 +87,4 @@ tasks.withType(JavaExec) {
 }
 
 
-jib.to.image = 'gcr.io/service-compute/jib-image'
 

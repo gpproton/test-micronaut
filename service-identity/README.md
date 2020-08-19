@@ -1,16 +1,22 @@
-## Feature cache-hazelcast documentation
+## Feature jdbc-hikari documentation
 
-- [Micronaut Hazelcast Cache documentation](https://micronaut-projects.github.io/micronaut-cache/latest/guide/index.html#hazelcast)
+- [Micronaut Hikari JDBC Connection Pool documentation](https://micronaut-projects.github.io/micronaut-sql/latest/guide/index.html#jdbc)
 
-- [https://hazelcast.org/](https://hazelcast.org/)
+## Feature discovery-consul documentation
 
-## Feature security documentation
+- [Micronaut Consul Service Discovery documentation](https://docs.micronaut.io/latest/guide/index.html#serviceDiscoveryConsul)
 
-- [Micronaut Micronaut Security documentation](https://micronaut-projects.github.io/micronaut-security/latest/guide/index.html)
+- [https://www.consul.io](https://www.consul.io)
 
-## Feature elasticsearch documentation
+## Feature graphql documentation
 
-- [Micronaut Elasticsearch Driver documentation](https://micronaut-projects.github.io/micronaut-elasticsearch/latest/guide/index.html)
+- [Micronaut Micronaut GraphQL documentation](https://micronaut-projects.github.io/micronaut-graphql/latest/guide/index.html)
+
+## Feature config-consul documentation
+
+- [Micronaut Consul Distributed Configuration documentation](https://docs.micronaut.io/latest/guide/index.html#distributedConfigurationConsul)
+
+- [https://www.consul.io](https://www.consul.io)
 
 ## Feature openapi documentation
 
@@ -26,19 +32,21 @@
 
 - [Micronaut Kafka Messaging documentation](https://micronaut-projects.github.io/micronaut-kafka/latest/guide/index.html)
 
-## Feature jetty-server documentation
+## Feature elasticsearch documentation
 
-- [Micronaut Jetty Server documentation](https://micronaut-projects.github.io/micronaut-servlet/1.0.x/guide/index.html#jetty)
+- [Micronaut Elasticsearch Driver documentation](https://micronaut-projects.github.io/micronaut-elasticsearch/latest/guide/index.html)
 
-## Feature jax-rs documentation
+## Feature liquibase documentation
 
-- [Micronaut JAX-RS support documentation](https://micronaut-projects.github.io/micronaut-jaxrs/latest/guide/index.html)
+- [Micronaut Liquibase Database Migration documentation](https://micronaut-projects.github.io/micronaut-liquibase/latest/guide/index.html)
 
-## Feature config-consul documentation
+- [https://www.liquibase.org/](https://www.liquibase.org/)
 
-- [Micronaut Consul Distributed Configuration documentation](https://docs.micronaut.io/latest/guide/index.html#distributedConfigurationConsul)
+## Feature cache-hazelcast documentation
 
-- [https://www.consul.io](https://www.consul.io)
+- [Micronaut Hazelcast Cache documentation](https://micronaut-projects.github.io/micronaut-cache/latest/guide/index.html#hazelcast)
+
+- [https://hazelcast.org/](https://hazelcast.org/)
 
 ## Feature views-thymeleaf documentation
 
@@ -46,51 +54,7 @@
 
 - [https://www.thymeleaf.org/](https://www.thymeleaf.org/)
 
-## Feature jdbc-hikari documentation
-
-- [Micronaut Hikari JDBC Connection Pool documentation](https://micronaut-projects.github.io/micronaut-sql/latest/guide/index.html#jdbc)
-
-## Feature graphql documentation
-
-- [Micronaut Micronaut GraphQL documentation](https://micronaut-projects.github.io/micronaut-graphql/latest/guide/index.html)
-
-## Feature flyway documentation
-
-- [Micronaut Flyway Database Migration documentation](https://micronaut-projects.github.io/micronaut-flyway/latest/guide/index.html)
-
-- [https://flywaydb.org/](https://flywaydb.org/)
-
-## Feature kubernetes documentation
-
-- [Micronaut Kubernetes Support documentation](https://micronaut-projects.github.io/micronaut-kubernetes/latest/guide/index.html)
-
-- [https://kubernetes.io/docs/home/](https://kubernetes.io/docs/home/)
-
-## Feature management documentation
-
-- [Micronaut Micronaut Management documentation](https://docs.micronaut.io/latest/guide/index.html#management)
-
 ## Feature hibernate-validator documentation
 
 - [Micronaut Hibernate Validator documentation](https://micronaut-projects.github.io/micronaut-hibernate-validator/latest/guide/index.html)
-
-## Feature security-jwt documentation
-
-- [Micronaut Micronaut Security JWT documentation](https://micronaut-projects.github.io/micronaut-security/latest/guide/index.html)
-
-## Feature config-kubernetes documentation
-
-- [Micronaut Kubernetes Distributed Configuration documentation](https://micronaut-projects.github.io/micronaut-kubernetes/latest/guide/index.html)
-
-## Feature jackson-xml documentation
-
-- [Micronaut Jackson XML serialization/deserialization documentation](https://micronaut-projects.github.io/micronaut-jackson-xml/latest/guide/index.html)
-
-- [https://github.com/FasterXML/jackson-dataformat-xml](https://github.com/FasterXML/jackson-dataformat-xml)
-
-## Feature discovery-consul documentation
-
-- [Micronaut Consul Service Discovery documentation](https://docs.micronaut.io/latest/guide/index.html#serviceDiscoveryConsul)
-
-- [https://www.consul.io](https://www.consul.io)
 
