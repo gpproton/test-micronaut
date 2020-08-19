@@ -4,6 +4,7 @@
   "description": "A micro services test",
   "productName": "Colocate Test",
   "author": "Godwin peter .O <me@godwin.dev>",
+  "license": "MIT",
   "private": false,
   "scripts": {
     "lint": "eslint --ext .js,.ts,.vue ./",
