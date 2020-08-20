@@ -1,43 +1,74 @@
-version: '2.1'
+version: '3.8'
 
 services:
-  jsreport:
-    image: jsreport/jsreport
-    container_name: jsreport
-    hostname: jsreport
-    ports:
-      - 5488:5488
+## docker-compose up --remove-orphans
+## docker stack deploy --compose-file docker-compose.yml --prune --orchestrator swarm test-micronaut
+## docker stack deploy --compose-file docker-compose.yml --orchestrator kubernetes test-micronaut
+## docker service ls
+## docker service ps test-micronaut
+## docker stack services test-micronaut
+## docker stack rm test-micronaut
+
   consul:
     image: consul
-    container_name: consul
-    network_mode: host
+    restart: unless-stopped
+    deploy:
+      replicas: 1
+    ports:
+      - 8505:8500
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8500"]
+      test: ["CMD", "curl", "-f", "http://consul:8500"]
       interval: 30s
-      timeout: 10s
+      timeout: 20s
       retries: 5
-  kafkaserver:
-    image: "spotify/kafka:latest"
-    container_name: kafka
-    hostname: localhost
-    network_mode: host
+
+  zookeeper:
+    image: 'bitnami/zookeeper:latest'
+    restart: unless-stopped
+    deploy:
+      replicas: 1
     ports:
       - 2181:2181
+      - 2888:2888
+      - 3888:3888
+      - 2182:8080
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+
+  kafka:
+    image: 'bitnami/kafka:latest'
+    restart: unless-stopped
+    deploy:
+      replicas: 1
+    ports:
       - 9092:9092
     environment:
-      ADVERTISED_HOST: localhost
-      ADVERTISED_PORT: 9092
-#  kafka_manager:
-#    image: "mzagar/kafka-manager-docker:1.3.3.4"
-#    container_name: kafkamanager
-#    network_mode: host
-#    ports:
-#      - 9000:9000
-#    environment:
-#      ZK_HOSTS: "localhost:2181"
+      - KAFKA_BROKER_ID=1
+      - KAFKA_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    depends_on:
+      - zookeeper
+
+  kafka-manager:
+    image: "kafkamanager/kafka-manager"
+    restart: unless-stopped
+    deploy:
+      replicas: 1
+    ports:
+      - 9450:9000
+    depends_on:
+      - zookeeper
+    environment:
+      ZK_HOSTS: "zookeeper"
+      KAFKA_MANAGER_AUTH_ENABLED: "false"
+
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.2
-    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    restart: unless-stopped
+    deploy:
+      replicas: 1
     environment:
       - cluster.name=docker-cluster
       - bootstrap.memory_lock=true
@@ -49,64 +80,124 @@ services:
     ports:
       - 9200:9200
 
-  service-compute:
-    build: ./service-compute
-    image: service-compute
-    container_name: service-compute
-    #network_mode: host
+  jsreport:
+    image: jsreport/jsreport
+    restart: unless-stopped
+    deploy:
+      replicas: 1
     ports:
-      - 8881:8080
-    depends_on:
-      consul:
-        condition: service_healthy
+      - 5488:5488
+
   service-gateway:
     build: ./service-gateway
     image: service-gateway
-    container_name: service-gateway
-    network_mode: host
+    restart: unless-stopped
+    deploy:
+      replicas: 1
+    ports:
+      - 8880:8080
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      test: ["CMD", "curl", "-f", "http://service-gateway:8080"]
       interval: 30s
       timeout: 20s
       retries: 5
     depends_on:
-      consul:
-        condition: service_healthy
+      - consul
+    environment:
+      - "CONSUL_HOST=consul"
+      - "CONSUL_PORT=8500"
+
+  service-compute:
+    build: ./service-compute
+    image: service-compute
+    restart: unless-stopped
+    deploy:
+      replicas: 1
+    ports:
+      - 8881:8080
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://service-compute:8080"]
+      interval: 30s
+      timeout: 20s
+      retries: 5
+    depends_on:
+      - consul
+    environment:
+      - "CONSUL_HOST=consul"
+      - "CONSUL_PORT=8500"
+
   service-identity:
     build: ./service-identity
     image: service-identity
-    container_name: service-identity
-    #network_mode: host
+    restart: unless-stopped
+    deploy:
+      replicas: 1
     ports:
       - 8882:8080
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://service-identity:8080"]
+      interval: 30s
+      timeout: 20s
+      retries: 5
     depends_on:
-      consul:
-        condition: service_healthy
+      - consul
+    environment:
+      - "CONSUL_HOST=consul"
+      - "CONSUL_PORT=8500"
+
   service-pipeline:
     build: ./service-pipeline
     image: service-pipeline
-    container_name: service-pipeline
-    #network_mode: host
+    restart: unless-stopped
+    deploy:
+      replicas: 1
     ports:
       - 8883:8080
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://service-pipeline:8080"]
+      interval: 30s
+      timeout: 20s
+      retries: 5
     depends_on:
-      consul:
-        condition: service_healthy
+      - consul
+    environment:
+      - "CONSUL_HOST=consul"
+      - "CONSUL_PORT=8500"
+
   service-summary:
     build: ./service-summary
     image: service-summary
-    container_name: service-summary
-    #network_mode: host
+    restart: unless-stopped
+    deploy:
+      replicas: 1
     ports:
       - 8884:8080
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://service-summary:8080"]
+      interval: 30s
+      timeout: 20s
+      retries: 5
     depends_on:
-      consul:
-        condition: service_healthy
+      - consul
+    environment:
+      - "CONSUL_HOST=consul"
+      - "CONSUL_PORT=8500"
+
   frontend:
     build: ./frontend
     image: frontend
-    container_name: frontend
-    network_mode: host
+    restart: unless-stopped
+    deploy:
+      replicas: 1
+    ports:
+      - 3000:3000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://frontend:3000"]
+      interval: 30s
+      timeout: 20s
+      retries: 5
     depends_on:
-      service-gateway:
-        condition: service_healthy
+      - service-gateway
+
+volumes:
+  db-data:
