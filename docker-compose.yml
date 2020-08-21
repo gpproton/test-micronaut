@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3'
 
 services:
 ## docker-compose up --remove-orphans
@@ -11,11 +11,11 @@ services:
 
   consul:
     image: consul
-    restart: unless-stopped
-    deploy:
-      replicas: 1
+    restart: always
     ports:
       - 8505:8500
+    labels:
+      kompose.service.type: LoadBalancer
     healthcheck:
       test: ["CMD", "curl", "-f", "http://consul:8500"]
       interval: 30s
@@ -24,38 +24,36 @@ services:
 
   zookeeper:
     image: 'bitnami/zookeeper:latest'
-    restart: unless-stopped
-    deploy:
-      replicas: 1
+    restart: always
     ports:
       - 2181:2181
       - 2888:2888
       - 3888:3888
       - 2182:8080
+    labels:
+      kompose.service.type: LoadBalancer
     environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
+      - "ALLOW_ANONYMOUS_LOGIN=yes"
 
   kafka:
     image: 'bitnami/kafka:latest'
-    restart: unless-stopped
-    deploy:
-      replicas: 1
+    restart: always
     ports:
       - 9092:9092
+    labels:
+      kompose.service.type: LoadBalancer
     environment:
-      - KAFKA_BROKER_ID=1
-      - KAFKA_LISTENERS=PLAINTEXT://:9092
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - ALLOW_PLAINTEXT_LISTENER=yes
+      - "KAFKA_BROKER_ID=1"
+      - "KAFKA_LISTENERS=PLAINTEXT://:9092"
+      - "KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092"
+      - "KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181"
+      - "ALLOW_PLAINTEXT_LISTENER=yes"
     depends_on:
       - zookeeper
 
   kafka-manager:
     image: "kafkamanager/kafka-manager"
-    restart: unless-stopped
-    deploy:
-      replicas: 1
+    restart: always
     ports:
       - 9450:9000
     depends_on:
@@ -64,13 +62,13 @@ services:
       ZK_HOSTS: "zookeeper"
       KAFKA_MANAGER_AUTH_ENABLED: "false"
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
-    restart: unless-stopped
-    deploy:
-      replicas: 1
+  elasticBoot:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.0
+    restart: always
+    volumes:
+      - "elasticBootData:/usr/share/elasticsearch/data"
     environment:
-      - cluster.name=docker-cluster
+      - cluster.name=es-cluster
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ulimits:
@@ -78,119 +76,140 @@ services:
         soft: -1
         hard: -1
     ports:
-      - 9200:9200
+      - 9201:9200
+  
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.0
+    restart: always
+    labels:
+      kompose.service.type: LoadBalancer
+    volumes:
+      - "elasticRunnerData:/usr/share/elasticsearch/data"
+    environment:
+      - cluster.name=es-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=elasticBoot"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9202:9200
 
   jsreport:
     image: jsreport/jsreport
-    restart: unless-stopped
-    deploy:
-      replicas: 1
+    restart: always
     ports:
       - 5488:5488
+    labels:
+      kompose.service.type: LoadBalancer
+    # volumes:
+    #  - "test-data:/app/data"
 
   service-gateway:
     build: ./service-gateway
     image: service-gateway
-    restart: unless-stopped
-    deploy:
-      replicas: 1
+    restart: always
     ports:
-      - 8880:8080
+      - 8890:8080
+    labels:
+      kompose.service.type: LoadBalancer
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://service-gateway:8080"]
+      test: ["CMD", "curl", "-f", "http://service-gateway:8080/health"]
       interval: 30s
       timeout: 20s
       retries: 5
     depends_on:
       - consul
     environment:
-      - "CONSUL_HOST=consul"
-      - "CONSUL_PORT=8500"
+      - CONSUL_HOST=consul
+      - KAFKA_HOST=kafka
 
   service-compute:
     build: ./service-compute
     image: service-compute
-    restart: unless-stopped
-    deploy:
-      replicas: 1
+    restart: always
     ports:
       - 8881:8080
+    labels:
+      kompose.service.type: LoadBalancer
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://service-compute:8080"]
+      test: ["CMD", "curl", "-f", "http://service-compute:8080/health"]
       interval: 30s
       timeout: 20s
       retries: 5
     depends_on:
       - consul
     environment:
-      - "CONSUL_HOST=consul"
-      - "CONSUL_PORT=8500"
+      - CONSUL_HOST=consul
+      - KAFKA_HOST=kafka
 
   service-identity:
     build: ./service-identity
     image: service-identity
-    restart: unless-stopped
-    deploy:
-      replicas: 1
+    restart: always
     ports:
       - 8882:8080
+    labels:
+      kompose.service.type: LoadBalancer
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://service-identity:8080"]
+      test: ["CMD", "curl", "-f", "http://service-identity:8080/health"]
       interval: 30s
       timeout: 20s
       retries: 5
     depends_on:
       - consul
     environment:
-      - "CONSUL_HOST=consul"
-      - "CONSUL_PORT=8500"
+      - CONSUL_HOST=consul
+      - KAFKA_HOST=kafka
 
   service-pipeline:
     build: ./service-pipeline
     image: service-pipeline
-    restart: unless-stopped
-    deploy:
-      replicas: 1
+    restart: always
     ports:
       - 8883:8080
+    labels:
+      kompose.service.type: LoadBalancer
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://service-pipeline:8080"]
+      test: ["CMD", "curl", "-f", "http://service-pipeline:8080/health"]
       interval: 30s
       timeout: 20s
       retries: 5
     depends_on:
       - consul
     environment:
-      - "CONSUL_HOST=consul"
-      - "CONSUL_PORT=8500"
+      - CONSUL_HOST=consul
+      - KAFKA_HOST=kafka
 
   service-summary:
     build: ./service-summary
     image: service-summary
-    restart: unless-stopped
-    deploy:
-      replicas: 1
+    restart: always
     ports:
       - 8884:8080
+    labels:
+      kompose.service.type: LoadBalancer
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://service-summary:8080"]
+      test: ["CMD", "curl", "-f", "http://service-summary:8080/health"]
       interval: 30s
       timeout: 20s
       retries: 5
     depends_on:
       - consul
     environment:
-      - "CONSUL_HOST=consul"
-      - "CONSUL_PORT=8500"
+      - CONSUL_HOST=consul
+      - KAFKA_HOST=kafka
 
   frontend:
     build: ./frontend
     image: frontend
-    restart: unless-stopped
-    deploy:
-      replicas: 1
+    restart: always
     ports:
       - 3000:3000
+    labels:
+      kompose.service.type: LoadBalancer
     healthcheck:
       test: ["CMD", "curl", "-f", "http://frontend:3000"]
       interval: 30s
@@ -200,4 +219,9 @@ services:
       - service-gateway
 
 volumes:
-  db-data:
+  test-data:
+    driver: local
+  elasticBootData:
+    driver: local
+  elasticRunnerData:
+    driver: local
