@@ -3,4 +3,4 @@ defaultPackage: colocate.io
 testFramework: spock
 sourceLanguage: groovy
 buildTool: gradle
-features: [annotation-api, app-name, cache-hazelcast, config-consul, data, data-jpa, discovery-consul, docker, elasticsearch, file-watch, gradle, graphql, groovy, groovy-application, h2, hibernate-gorm, hibernate-validator, http-client, jdbc-hikari, kafka, liquibase, logback, netty-server, openapi, readme, shade, spock, views-thymeleaf, yaml]
+features: [annotation-api, app-name, cache-hazelcast, config-consul, data, data-jpa, discovery-consul, docker, elasticsearch, file-watch, gradle, graphql, groovy, groovy-application, h2, hibernate-gorm, hibernate-validator, http-client, jdbc-hikari, kafka, liquibase, logback, netty-server, openapi, readme, shade, spock, views-thymeleaf, yaml, management]
